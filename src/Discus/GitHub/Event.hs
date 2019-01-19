@@ -89,7 +89,7 @@ parsePush hdrs json
  , Just commits                 <- sequence $ map parseCommit osCommit
  = EventPush sRepoName sBranch commits
 
- | otherwise            = EventOther hdrs "push" json
+ | otherwise    = EventOther hdrs "push" json
 
 
 ---------------------------------------------------------------------------------------------------

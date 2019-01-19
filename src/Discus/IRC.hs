@@ -3,7 +3,6 @@ module Discus.IRC where
 import Config
 import qualified Data.List              as List
 import qualified System.IO              as S
-import qualified Control.Concurrent     as C
 import qualified Network.Socket         as N
 
 
@@ -56,14 +55,6 @@ goIrcRecvLoop c h msgs
         goRead
 
    | otherwise = goRead
-
-
--- Endlessly wait for strings from a channel and write them to the IRC server.
-goIrcSendLoop :: S.Handle -> C.Chan String -> IO ()
-goIrcSendLoop h c
- = do   str <- C.readChan c
-        ircWriteLine h str
-        goIrcSendLoop h c
 
 
 -- | Say a message in a channel on the IRC server.
