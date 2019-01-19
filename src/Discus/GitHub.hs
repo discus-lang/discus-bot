@@ -4,12 +4,12 @@ import Config
 import Discus.IRC
 import Discus.Github.Event
 import Control.Monad
-
 import qualified System.IO                      as S
 import qualified Network.Socket                 as N
 import qualified Control.Exception              as E
 import qualified Control.Concurrent             as C
 import qualified Text.Show.Pretty               as P
+import qualified Data.Char                      as Char
 
 
 -- | Open a port to listen for events from github,
@@ -17,9 +17,9 @@ import qualified Text.Show.Pretty               as P
 startHookServer :: Config -> IO ()
 startHookServer c
  = N.withSocketsDo
- $ do   addr <- resolve (configHookPort c)
+ $ do   putStrLn $ "* Discus Bot Starting Up."
+        addr <- resolve (configHookPort c)
         E.bracket (open addr) N.close loop
-
  where
   resolve port
    = do let hints = N.defaultHints
@@ -39,8 +39,9 @@ startHookServer c
 
   loop s
    = forever $ do
+        putStrLn $ "* Waiting for request..."
         (sPeer, saPeer) <- N.accept s
-        putStrLn $ "Connection from " ++ show saPeer
+        putStrLn $ "! Received connection from " ++ show saPeer
         hPeer <- N.socketToHandle sPeer S.ReadWriteMode
         talk hPeer
 
@@ -66,20 +67,37 @@ startHookServer c
         S.hFlush S.stdout
 
         (case formatEvent event of
-          Just msgs -> ircSendMessages c msgs
-          Nothing   -> putStrLn "[unhandled github event]")
+          Just msgs
+           -> do putStrLn "! Forwarding event to IRC"
+                 ircSendMessages c msgs
+          Nothing
+           -> putStrLn "[unhandled github event]")
 
         S.hClose h
 
 
 formatEvent :: Event -> Maybe [String]
 formatEvent (EventPush sRepoName sRepoBranch commits)
- = Just $ map (formatCommit sRepoName sRepoBranch) commits
-
+ = let  -- Limit number of commits shown to 10, to avoid flooding the server.
+        nShow   = 10
+        csFirst = take nShow commits
+        csRest  = drop nShow commits
+   in   Just $ map (formatCommit sRepoName sRepoBranch) csFirst
+             ++ if length csRest >= 0
+                 then ["[push] ... and " ++ show (length csRest) ++ " more"]
+                 else []
 formatEvent _
  = Just []
 
 formatCommit sRepoName sRepoBranch (Commit sAuthor sMessage)
- =  sRepoName ++ "/" ++ sRepoBranch
- ++ " " ++ sAuthor ++ ": " ++ sMessage
+ =  "[push] "
+ ++         colored aMagenta sRepoName
+ ++ "/"  ++ sRepoBranch
+ ++ " "  ++ colored aCyan    sAuthor
+ ++ ": " ++ sMessage
+ where  aReset   = Char.chr 0x0f : ""
+        aMagenta = Char.chr 0x03 : "13"
+        aBlue    = Char.chr 0x03 : "02"
+        aCyan    = Char.chr 0x03 : "10"
 
+        colored a str = a ++ str ++ aReset
