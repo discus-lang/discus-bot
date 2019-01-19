@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1f263442419341be38e3040f7ce76b5fd1f93b5f262209d685b0cd620f03ec85
+-- hash: 78fee5c3855c4e53f26f8ccad82a5f27cea06e490c7362f61814e5d57d26ab1e
 
 name:           discus-bot
 version:        0.0.0.0
@@ -13,6 +13,7 @@ executable discus-bot
   main-is: Main.hs
   other-modules:
       Config
+      Disco.Hook
       Disco.IRC
       Paths_discus_bot
   hs-source-dirs:
