@@ -1,25 +1,17 @@
 
 module Config where
 
+
+-- | Bot Config.
 data Config
         = Config
-        { configIrcHost         :: String
-        , configIrcPort         :: Integer
-        , configIrcChannel      :: String
-        , configIrcNick         :: String
-        , configIrcName         :: String
+        { configIrcHost         :: String       -- ^ Host name of IRC server.
+        , configIrcPort         :: Integer      -- ^ Port number on IRC server.
+        , configIrcChannel      :: String       -- ^ Send messages in this IRC channel.
+        , configIrcNick         :: String       -- ^ Nick name for IRC messages.
+        , configIrcName         :: String       -- ^ User name for IRC messages.
 
-        , configHookPort        :: Integer }
+        , configHookPort        :: Integer      -- ^ Local port to listen to for Webhooks.
+        }
         deriving (Show)
-
-
-configDefault :: Config
-configDefault
-        = Config
-        { configIrcHost         = "irc.freenode.org"
-        , configIrcPort         = 6667
-        , configIrcChannel      = "#discus-lang"
-        , configIrcNick         = "discus-bot"
-        , configIrcName         = "discus-lang channel bot"
-        , configHookPort        = 4000 }
 

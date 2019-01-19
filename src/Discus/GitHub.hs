@@ -1,16 +1,19 @@
 
 module Discus.GitHub where
 import Config
+import Discus.IRC
 import Discus.Github.Event
 import Control.Monad
+
 import qualified System.IO                      as S
+import qualified Network.Socket                 as N
 import qualified Control.Exception              as E
 import qualified Control.Concurrent             as C
-import qualified Network.Socket                 as N
 import qualified Text.Show.Pretty               as P
 
 
--- |
+-- | Open a port to listen for events from github,
+--   logging interesting ones to our IRC channel.
 startHookServer :: Config -> IO ()
 startHookServer c
  = N.withSocketsDo
@@ -19,10 +22,9 @@ startHookServer c
 
  where
   resolve port
-   = do let hints
-                = N.defaultHints
-                { N.addrFlags      = [N.AI_PASSIVE]
-                , N.addrSocketType = N.Stream }
+   = do let hints = N.defaultHints
+                  { N.addrFlags      = [N.AI_PASSIVE]
+                  , N.addrSocketType = N.Stream }
 
         addr : _ <- N.getAddrInfo (Just hints) Nothing (Just $ show port)
         return addr
@@ -41,7 +43,6 @@ startHookServer c
         putStrLn $ "Connection from " ++ show saPeer
         hPeer <- N.socketToHandle sPeer S.ReadWriteMode
         talk hPeer
---        void $ C.forkFinally (talk hPeer) (\_ -> S.hClose hPeer)
 
   talk h
    = do -- Read the request payload.
@@ -58,10 +59,27 @@ startHookServer c
         S.hFlush h
 
         -- Log the request to the console.
+        let event = parseEvent str
         putStrLn $ "-- > http request " ++ replicate 60 '-'
-        putStrLn $ P.ppShow $ parseEvent str
+        putStrLn $ P.ppShow event
         putStrLn $ "-- < http request " ++ replicate 60 '-'
         S.hFlush S.stdout
 
+        (case formatEvent event of
+          Just msgs -> ircSendMessages c msgs
+          Nothing   -> putStrLn "[unhandled github event]")
+
         S.hClose h
+
+
+formatEvent :: Event -> Maybe [String]
+formatEvent (EventPush sRepoName sRepoBranch commits)
+ = Just $ map (formatCommit sRepoName sRepoBranch) commits
+
+formatEvent _
+ = Just []
+
+formatCommit sRepoName sRepoBranch (Commit sAuthor sMessage)
+ =  sRepoName ++ "/" ++ sRepoBranch
+ ++ " " ++ sAuthor ++ ": " ++ sMessage
 
