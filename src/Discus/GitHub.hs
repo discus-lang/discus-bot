@@ -2,7 +2,7 @@
 module Discus.GitHub where
 import Config
 import Discus.IRC
-import Discus.Github.Event
+import Discus.GitHub.Event
 import Control.Monad
 import qualified System.IO                      as S
 import qualified Network.Socket                 as N
