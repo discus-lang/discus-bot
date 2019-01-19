@@ -69,7 +69,7 @@ parseEvent str0
          , Just sEvent  <- lookup "x-github-event" hdrs
          = case map Char.toLower sEvent of
                 "push"  -> parsePush hdrs json
-                sEvent  -> EventOther hdrs sEvent json
+                _       -> EventOther hdrs sEvent json
 
          | otherwise
          = EventJSON hdrs json

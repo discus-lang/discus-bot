@@ -38,8 +38,8 @@ goIrcRecvLoop c h msgs
  = goRead
  where
   goRead
-   = do str <- ircReadLine h
-        case str of
+   = do mStr <- ircReadLine h
+        case mStr of
          Nothing  -> return ()
          Just str -> goEat (stripCR str)
 

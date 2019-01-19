@@ -7,7 +7,6 @@ import Control.Monad
 import qualified System.IO                      as S
 import qualified Network.Socket                 as N
 import qualified Control.Exception              as E
-import qualified Control.Concurrent             as C
 import qualified Text.Show.Pretty               as P
 import qualified Data.Char                      as Char
 
@@ -97,7 +96,6 @@ formatCommit sRepoName sRepoBranch (Commit sAuthor sMessage)
  ++ ": " ++ sMessage
  where  aReset   = Char.chr 0x0f : ""
         aMagenta = Char.chr 0x03 : "13"
-        aBlue    = Char.chr 0x03 : "02"
         aCyan    = Char.chr 0x03 : "10"
 
         colored a str = a ++ str ++ aReset

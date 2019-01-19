@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 78fee5c3855c4e53f26f8ccad82a5f27cea06e490c7362f61814e5d57d26ab1e
+-- hash: 8cfe579ead667ea81ae413d86989d9adeff0025ea3199315773e4e03a29b5312
 
 name:           discus-bot
 version:        0.0.0.0
@@ -13,8 +13,9 @@ executable discus-bot
   main-is: Main.hs
   other-modules:
       Config
-      Disco.Hook
-      Disco.IRC
+      Discus.GitHub
+      Discus.GitHub.Event
+      Discus.IRC
       Paths_discus_bot
   hs-source-dirs:
       src
@@ -24,10 +25,9 @@ executable discus-bot
       base
     , bytestring
     , containers
-    , json
+    , derulo
     , network
-    , parsec
     , pretty-show
+    , split
     , text
-    , unix
   default-language: Haskell2010

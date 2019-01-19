@@ -1,9 +1,6 @@
 
 import Config
 import Discus.GitHub
-import qualified System.IO                      as S
-import qualified Network.Socket                 as N
-import qualified Control.Concurrent.Chan        as C
 
 
 main
