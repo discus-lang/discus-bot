@@ -83,7 +83,7 @@ formatEvent (EventPush sRepoName sRepoBranch commits)
         csFirst = take nShow commits
         csRest  = drop nShow commits
    in   Just $ map (formatCommit sRepoName sRepoBranch) csFirst
-             ++ if length csRest >= 0
+             ++ if length csRest > 0
                  then ["[push] ... and " ++ show (length csRest) ++ " more"]
                  else []
 formatEvent _

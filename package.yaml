@@ -54,10 +54,9 @@ executables:
     dependencies:
       - base
       - text
-      - unix
-      - json
-      - parsec
       - network
+      - split
+      - derulo
       - containers
       - bytestring
       - pretty-show
