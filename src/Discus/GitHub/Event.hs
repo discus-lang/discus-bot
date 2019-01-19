@@ -1,5 +1,5 @@
 
-module Discus.Github.Event where
+module Discus.GitHub.Event where
 import qualified Data.List              as List
 import qualified Data.List.Split        as List
 import qualified Data.Char              as Char
