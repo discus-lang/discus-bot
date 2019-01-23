@@ -96,10 +96,10 @@ parsePush hdrs json
 -- | Parse a commit object.
 parseCommit :: D.JSON -> Maybe Commit
 parseCommit json
- | D.Object fsCommit                    <- json
- , Just (D.Object fsAuthor)             <- lookup "author" fsCommit
- , Just (D.String sAuthorName)          <- lookup "name" fsAuthor
- , Just (D.String sMessage)             <- lookup "message" fsCommit
+ | D.Object fsCommit            <- json
+ , Just (D.Object fsAuthor)     <- lookup "author" fsCommit
+ , Just (D.String sAuthorName)  <- lookup "name" fsAuthor
+ , Just (D.String sMessage)     <- lookup "message" fsCommit
  , sMessageHead : _ <- lines sMessage
  = Just $ Commit sAuthorName sMessageHead
 

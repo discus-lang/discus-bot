@@ -7,6 +7,7 @@ import Control.Monad
 import qualified System.IO                      as S
 import qualified Network.Socket                 as N
 import qualified Control.Exception              as E
+import qualified Control.Concurrent             as C
 import qualified Text.Show.Pretty               as P
 import qualified Data.Char                      as Char
 
@@ -39,10 +40,28 @@ startHookServer c
   loop s
    = forever $ do
         putStrLn $ "* Waiting for request..."
-        (sPeer, saPeer) <- N.accept s
-        putStrLn $ "! Received connection from " ++ show saPeer
-        hPeer <- N.socketToHandle sPeer S.ReadWriteMode
-        talk hPeer
+        E.catch
+         (do    (sPeer, saPeer) <- N.accept s
+                putStrLn $ "! Received connection from " ++ show saPeer
+                hPeer <- N.socketToHandle sPeer S.ReadWriteMode
+                talk hPeer)
+
+         (\(e :: E.SomeException) ->
+          do    putStrLn $ "! Exception when serving HTTP request"
+                putStrLn $ "  err = " ++ show e
+
+                -- Put in 1s delay so we don't go into a hot loop if something
+                -- goes wrong with the socket.
+                --
+                -- If a particular client keeps connecting and then resetting
+                -- the connection then we should stall when connecting that
+                -- client only, but for now just stall globally.
+                --
+                -- Without a better mechanism for this ppl could DOS us,
+                -- but hey, we're only a lowly IRC Bot, so we'll fix this
+                -- the first time someone can be bothered.
+                C.threadDelay (1000 * 1000)
+                loop s)
 
   talk h
    = do -- Read the request payload.
