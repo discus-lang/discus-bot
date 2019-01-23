@@ -1,4 +1,4 @@
-
+{-# LANGUAGE ScopedTypeVariables #-}
 module Discus.GitHub where
 import Config
 import Discus.IRC
